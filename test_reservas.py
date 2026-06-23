@@ -1,3 +1,4 @@
+import unittest
 from modulo_reservas import GestorReservas
 
 # Simulación de la estructura de la clase Vehículo para pruebas locales
@@ -38,6 +39,26 @@ def correr_pruebas_modulo():
     
     # Confirmación de que la lista de reservas activas se actualizó
     gestor.listar_reservas_activas()
+
+class TestGestorReservas(unittest.TestCase):
+    """Pruebas unitarias del GestorReservas (no modifica modulo_reservas.py)."""
+
+    def setUp(self):
+        self.gestor = GestorReservas()
+        self.vehiculo = VehiculoSimulado("P123-456", "Disponible")
+
+    def test_crear_reserva_marca_vehiculo_alquilado(self):
+        self.gestor.crear_reserva(1, "Cliente Alfa", self.vehiculo,
+                                  "2026-06-01", "2026-06-05")
+        self.assertEqual(self.vehiculo.estado, "Alquilado")
+
+    def test_validar_disponibilidad_rechaza_solapamiento(self):
+        self.gestor.crear_reserva(1, "Cliente Alfa", self.vehiculo,
+                                  "2026-06-01", "2026-06-05")
+        disponible, _ = self.gestor.validar_disponibilidad(
+            self.vehiculo, "2026-06-03", "2026-06-08")
+        self.assertFalse(disponible)
+
 
 if __name__ == "__main__":
     correr_pruebas_modulo()
